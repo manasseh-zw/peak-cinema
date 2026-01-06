@@ -1,8 +1,9 @@
 import { useState, useCallback } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
+import { motion } from 'motion/react'
 import { SearchInput } from '@/components/search/SearchInput'
-import { SearchResults } from '@/components/search/SearchResults'
 import { MovieModal } from '@/components/movie/MovieModal'
+import { MoviePoster } from '@/components/movie/MoviePoster'
 import { searchMovies, type SearchResult } from '@/lib/search'
 
 export const Route = createFileRoute('/')({ component: App })
@@ -25,7 +26,7 @@ function App() {
     setHasSearched(true)
 
     try {
-      const data = await searchMovies({ data: { query, limit: 20 } })
+      const data = await searchMovies({ data: { query, limit: 10 } })
       setResults(data)
     } catch (error) {
       console.error('Search error:', error)
@@ -40,8 +41,10 @@ function App() {
     setModalOpen(true)
   }
 
+  const showResults = hasSearched && results.length > 0
+
   return (
-    <main className="min-h-screen bg-black grain-overlay">
+    <main className="h-screen overflow-hidden bg-black grain-overlay flex flex-col">
       {/* Grain filter SVG */}
       <svg className="absolute w-0 h-0">
         <filter id="grain">
@@ -53,38 +56,76 @@ function App() {
         </filter>
       </svg>
 
-      {/* Hero Section */}
-      <section className="pt-20 pb-12 px-4">
-        <div className="max-w-4xl mx-auto text-center space-y-6">
-          {/* Title with gradient */}
-          <h1 className="text-4xl md:text-6xl font-bold">
-            <span className="bg-linear-to-r from-primary via-chart-2 to-chart-3 bg-clip-text text-transparent">
-              Search by Vibes
-            </span>
-          </h1>
-
-          <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-            Discover movies that match your mood. Describe what you're feeling and let AI find the perfect watch.
-          </p>
+      {/* Search Section - Animated position */}
+      <motion.section
+        className="w-full px-4 flex-shrink-0"
+        initial={false}
+        animate={{
+          paddingTop: showResults ? '1.5rem' : '30vh',
+          paddingBottom: showResults ? '1rem' : '2rem',
+        }}
+        transition={{ duration: 0.4, ease: 'easeOut' }}
+      >
+        <div className="max-w-2xl mx-auto text-center space-y-8">
+          {/* Fancy italic text */}
+          <motion.p
+            className="text-white/80 font-extralight font-serif italic text-xl md:text-3xl"
+            animate={{ 
+              opacity: showResults ? 0.5 : 1,
+              scale: showResults ? 0.9 : 1,
+            }}
+            transition={{ duration: 0.3 }}
+          >
+            Vibe search any movie
+          </motion.p>
 
           {/* Search Input */}
-          <div className="pt-4">
-            <SearchInput onSearch={handleSearch} isLoading={isLoading} />
-          </div>
-        </div>
-      </section>
+          <SearchInput onSearch={handleSearch} isLoading={isLoading} />
 
-      {/* Results Section */}
-      <section className="pb-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <SearchResults
-            results={results}
-            isLoading={isLoading}
-            hasSearched={hasSearched}
-            onMovieClick={handleMovieClick}
-          />
+          {/* Loading indicator */}
+          {isLoading && (
+            <p className="text-muted-foreground text-sm animate-pulse">
+              Finding movies...
+            </p>
+          )}
+
+          {/* No results */}
+          {hasSearched && !isLoading && results.length === 0 && (
+            <p className="text-muted-foreground text-sm">
+              No movies found. Try a different vibe!
+            </p>
+          )}
         </div>
-      </section>
+      </motion.section>
+
+      {/* Results Grid - 5 columns, 2 rows visible, scrollable */}
+      {showResults && (
+        <motion.section
+          className="flex-1 px-6 pb-4 overflow-y-auto scrollbar-hide"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+        >
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-5 gap-3">
+              {results.map((movie, index) => (
+                <motion.div
+                  key={movie.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                >
+                  <MoviePoster
+                    movie={movie}
+                    onClick={() => handleMovieClick(movie)}
+                    className="w-full"
+                  />
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </motion.section>
+      )}
 
       {/* Movie Modal */}
       <MovieModal
