@@ -130,9 +130,8 @@
   }
 }
 
-
 .grain-overlay::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   z-index: 1;
@@ -152,4 +151,3 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
-

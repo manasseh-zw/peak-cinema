@@ -1,4 +1,3 @@
-
 function getEnvVar(key: string, required: boolean = true): string {
   const value = process.env[key]
 
@@ -35,7 +34,7 @@ export function validateEnv(): void {
     'UPSTASH_VECTOR_REST_TOKEN',
   ] as const
 
-  const missing: string[] = []
+  const missing: Array<string> = []
 
   for (const key of required) {
     if (!process.env[key]) {

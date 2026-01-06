@@ -1,5 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
-import { vectorIndex, type MovieMetadata } from './upstash'
+import {  vectorIndex } from './upstash'
+import type {MovieMetadata} from './upstash';
 
 export type SearchResult = {
   id: string
@@ -21,7 +22,7 @@ export const searchMovies = createServerFn({ method: 'GET' })
       limit: Math.min(Math.max(input.limit ?? 10, 1), 20),
     }
   })
-  .handler(async ({data}) => {
+  .handler(async ({ data }) => {
     const results = await vectorIndex.query({
       data: data.query,
       topK: data.limit,
@@ -34,6 +35,5 @@ export const searchMovies = createServerFn({ method: 'GET' })
       score: result.score,
       metadata: result.metadata as MovieMetadata,
       overview: (result.data as string) ?? '',
-    })) as SearchResult[]
+    })) as Array<SearchResult>
   })
-

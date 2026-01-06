@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
+import { useEffect, useState } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
 import { MagnifyingGlassIcon, SpinnerGapIcon } from '@phosphor-icons/react'
 import {
   InputGroup,
@@ -21,10 +21,7 @@ interface SearchInputProps {
   isLoading?: boolean
 }
 
-export function SearchInput({
-  onSearch,
-  isLoading = false,
-}: SearchInputProps) {
+export function SearchInput({ onSearch, isLoading = false }: SearchInputProps) {
   const [value, setValue] = useState('')
   const [debouncedValue, setDebouncedValue] = useState('')
   const [placeholderIndex, setPlaceholderIndex] = useState(0)
@@ -86,7 +83,11 @@ export function SearchInput({
           <SpinnerGapIcon size={24} className="animate-spin text-primary" />
         ) : (
           <div className="w-10 h-10 rounded-full flex items-center justify-center">
-            <MagnifyingGlassIcon size={22} className="text-primary" weight="bold" />
+            <MagnifyingGlassIcon
+              size={22}
+              className="text-primary"
+              weight="bold"
+            />
           </div>
         )}
       </InputGroupAddon>

@@ -1,9 +1,9 @@
-import { XIcon, StarIcon, CalendarIcon } from '@phosphor-icons/react'
+import { CalendarIcon, StarIcon, XIcon } from '@phosphor-icons/react'
 import { AlertDialog as AlertDialogPrimitive } from '@base-ui/react/alert-dialog'
+import type { SearchResult } from '@/lib/search'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import type { SearchResult } from '@/lib/search'
 
 interface MovieModalProps {
   movie: SearchResult | null
@@ -24,7 +24,7 @@ export function MovieModal({ movie, open, onOpenChange }: MovieModalProps) {
         <AlertDialogPrimitive.Backdrop
           className={cn(
             'data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0',
-            'bg-black/90 backdrop-blur-md fixed inset-0 z-50'
+            'bg-black/90 backdrop-blur-md fixed inset-0 z-50',
           )}
         />
 
@@ -34,7 +34,7 @@ export function MovieModal({ movie, open, onOpenChange }: MovieModalProps) {
             'data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0',
             'data-closed:zoom-out-95 data-open:zoom-in-95',
             'bg-background fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2',
-            'w-[90vw] max-w-3xl max-h-[85vh] overflow-hidden outline-none'
+            'w-[90vw] max-w-3xl max-h-[85vh] overflow-hidden outline-none',
           )}
         >
           <div className="flex flex-col md:flex-row h-full">
@@ -80,13 +80,19 @@ export function MovieModal({ movie, open, onOpenChange }: MovieModalProps) {
 
                 {metadata.voteAverage && (
                   <span className="flex items-center gap-1">
-                    <StarIcon weight="fill" className="text-yellow-500" size={14} />
+                    <StarIcon
+                      weight="fill"
+                      className="text-yellow-500"
+                      size={14}
+                    />
                     {metadata.voteAverage.toFixed(1)}
                   </span>
                 )}
 
                 {metadata.voteCount && (
-                  <span className="text-xs">({metadata.voteCount.toLocaleString()} votes)</span>
+                  <span className="text-xs">
+                    ({metadata.voteCount.toLocaleString()} votes)
+                  </span>
                 )}
               </div>
 

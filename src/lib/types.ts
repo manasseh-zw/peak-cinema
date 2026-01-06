@@ -36,6 +36,6 @@ export type ParsedMovie = {
   voteCount: number
   voteAverage: number
   originalLanguage: string
-  genres: string[]
+  genres: Array<string>
   posterUrl: string
 }

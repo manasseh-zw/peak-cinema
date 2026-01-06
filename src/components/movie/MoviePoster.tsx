@@ -49,9 +49,7 @@ export function MoviePoster({ movie, onClick, className }: MoviePosterProps) {
         <h3 className="text-white font-semibold text-sm line-clamp-2 leading-tight drop-shadow-lg">
           {metadata.title}
         </h3>
-        {year && (
-          <p className="text-white/70 text-xs mt-1">{year}</p>
-        )}
+        {year && <p className="text-white/70 text-xs mt-1">{year}</p>}
       </div>
     </motion.div>
   )

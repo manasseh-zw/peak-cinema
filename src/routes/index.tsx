@@ -1,47 +1,51 @@
-import { useState, useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { motion, AnimatePresence } from 'motion/react'
+import { AnimatePresence, motion } from 'motion/react'
+import type {SearchResult} from '@/lib/search';
 import { SearchInput } from '@/components/search/SearchInput'
 import { MovieModal } from '@/components/movie/MovieModal'
 import { MoviePoster } from '@/components/movie/MoviePoster'
-import { searchMovies, type SearchResult } from '@/lib/search'
+import {  searchMovies } from '@/lib/search'
 
 export const Route = createFileRoute('/')({ component: App })
 
 function App() {
-  const [results, setResults] = useState<SearchResult[]>([])
+  const [results, setResults] = useState<Array<SearchResult>>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isFirstSearch, setIsFirstSearch] = useState(true)
   const [hasSearched, setHasSearched] = useState(false)
   const [selectedMovie, setSelectedMovie] = useState<SearchResult | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
 
-  const handleSearch = useCallback(async (query: string) => {
-    if (!query.trim()) {
-      setResults([])
-      setHasSearched(false)
-      setIsFirstSearch(true)
-      return
-    }
+  const handleSearch = useCallback(
+    async (query: string) => {
+      if (!query.trim()) {
+        setResults([])
+        setHasSearched(false)
+        setIsFirstSearch(true)
+        return
+      }
 
-    // Only show loading state on first search (no existing results)
-    const showLoadingState = results.length === 0
-    if (showLoadingState) {
-      setIsLoading(true)
-    }
-    setHasSearched(true)
-    setIsFirstSearch(false)
+      // Only show loading state on first search (no existing results)
+      const showLoadingState = results.length === 0
+      if (showLoadingState) {
+        setIsLoading(true)
+      }
+      setHasSearched(true)
+      setIsFirstSearch(false)
 
-    try {
-      const data = await searchMovies({ data: { query, limit: 10 } })
-      setResults(data)
-    } catch (error) {
-      console.error('Search error:', error)
-      // Don't clear results on error - keep stale data
-    } finally {
-      setIsLoading(false)
-    }
-  }, [results.length])
+      try {
+        const data = await searchMovies({ data: { query, limit: 10 } })
+        setResults(data)
+      } catch (error) {
+        console.error('Search error:', error)
+        // Don't clear results on error - keep stale data
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [results.length],
+  )
 
   const handleMovieClick = (movie: SearchResult) => {
     setSelectedMovie(movie)
@@ -84,7 +88,10 @@ function App() {
                 exit={{ opacity: 0, y: -10, height: 0, marginBottom: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                vibe search any movie  <span className="text-primary ">(well... about 10k movies)</span>
+                vibe search any movie{' '}
+                <span className="text-primary ">
+                  (well... about 10k movies)
+                </span>
               </motion.p>
             )}
           </AnimatePresence>
@@ -93,11 +100,14 @@ function App() {
           <SearchInput onSearch={handleSearch} isLoading={isLoading} />
 
           {/* No results - only show when done loading and truly empty */}
-          {hasSearched && !isLoading && results.length === 0 && !isFirstSearch && (
-            <p className="text-muted-foreground text-sm">
-              No movies found. Try a different vibe!
-            </p>
-          )}
+          {hasSearched &&
+            !isLoading &&
+            results.length === 0 &&
+            !isFirstSearch && (
+              <p className="text-muted-foreground text-sm">
+                No movies found. Try a different vibe!
+              </p>
+            )}
         </div>
       </motion.section>
 

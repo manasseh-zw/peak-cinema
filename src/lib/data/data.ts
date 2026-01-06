@@ -4,10 +4,10 @@
  * Run: bun run src/lib/data/data.ts
  */
 
+import { createReadStream, writeFileSync } from 'node:fs'
+import path from 'node:path'
 import { parse } from 'csv-parse'
-import { createReadStream, writeFileSync } from 'fs'
-import path from 'path'
-import type { RawMovieCsvRow, MovieVectorRecord } from '../types'
+import type { MovieVectorRecord, RawMovieCsvRow } from '../types'
 
 const CSV_PATH = path.join(import.meta.dir, 'data.csv')
 const JSON_PATH = path.join(import.meta.dir, 'data.json')
@@ -20,12 +20,12 @@ function slugify(text: string): string {
     .slice(0, 50)
 }
 
-async function parseCSV(): Promise<MovieVectorRecord[]> {
+async function parseCSV(): Promise<Array<MovieVectorRecord>> {
   console.log('Peak Cinema - CSV Parser')
   console.log('━'.repeat(40))
   console.log(`Reading from: ${CSV_PATH}`)
 
-  const records: MovieVectorRecord[] = []
+  const records: Array<MovieVectorRecord> = []
 
   const parser = createReadStream(CSV_PATH).pipe(
     parse({
@@ -71,12 +71,18 @@ async function main() {
   try {
     const records = await parseCSV()
 
-    console.log(`\nWriting ${records.length.toLocaleString()} records to JSON...`)
+    console.log(
+      `\nWriting ${records.length.toLocaleString()} records to JSON...`,
+    )
     writeFileSync(JSON_PATH, JSON.stringify(records, null, 2))
 
     const stats = {
       totalRecords: records.length,
-      fileSizeMB: (Buffer.byteLength(JSON.stringify(records)) / 1024 / 1024).toFixed(2),
+      fileSizeMB: (
+        Buffer.byteLength(JSON.stringify(records)) /
+        1024 /
+        1024
+      ).toFixed(2),
     }
 
     console.log('\nComplete!')

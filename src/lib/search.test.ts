@@ -1,9 +1,5 @@
-/**
- * Simple test script for the vector search functionality
- * Run with: npx tsx src/lib/search.test.ts
- */
-
-import { vectorIndex, type MovieMetadata } from './upstash'
+import {  vectorIndex } from './upstash'
+import type {MovieMetadata} from './upstash';
 
 const testQueries = [
   'action movie with explosions',
@@ -36,7 +32,7 @@ async function runSearchTest() {
       results.forEach((result, index) => {
         const metadata = result.metadata as MovieMetadata
         console.log(
-          `   ${index + 1}. ${metadata.title} (${metadata.releaseDate?.slice(0, 4) ?? 'N/A'})`
+          `${index + 1}. ${metadata.title} (${metadata.releaseDate?.slice(0, 4) ?? 'N/A'})`,
         )
         console.log(`Score: ${result.score.toFixed(4)}`)
         console.log(`Genres: ${metadata.genres?.join(', ') ?? 'N/A'}`)

@@ -1,13 +1,7 @@
-#!/usr/bin/env bun
-/**
- * Seeds Upstash Vector with movie data from data.json.
- * Run: bun run src/lib/data/seed.ts
- */
-
-import path from 'path'
+import path from 'node:path'
 import { Index } from '@upstash/vector'
-import { env } from '@/env'
 import type { MovieVectorRecord } from '../types'
+import { env } from '@/env'
 
 const JSON_PATH = path.join(import.meta.dir, 'data.json')
 const BATCH_SIZE = 100
@@ -38,7 +32,7 @@ async function main() {
     process.exit(1)
   }
 
-  const movies: MovieVectorRecord[] = await file.json()
+  const movies: Array<MovieVectorRecord> = await file.json()
   console.log(`Loaded ${movies.length.toLocaleString()} movies\n`)
 
   console.log('Starting upsert to Upstash...')
@@ -71,7 +65,9 @@ async function main() {
 
   console.log('\n')
   console.log('━'.repeat(40))
-  console.log(`Complete! Upserted ${upserted.toLocaleString()} movies in ${elapsed}s`)
+  console.log(
+    `Complete! Upserted ${upserted.toLocaleString()} movies in ${elapsed}s`,
+  )
 }
 
 main().catch((error) => {

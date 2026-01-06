@@ -1,6 +1,6 @@
 import { Index } from '@upstash/vector'
-import { env } from '@/env'
 import type { MovieVectorRecord } from './types'
+import { env } from '@/env'
 
 export type MovieMetadata = MovieVectorRecord['metadata']
 
