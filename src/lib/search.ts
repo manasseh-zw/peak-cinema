@@ -5,6 +5,7 @@ export type SearchResult = {
   id: string
   score: number
   metadata: MovieMetadata
+  overview: string
 }
 
 export const searchMovies = createServerFn({ method: 'GET' })
@@ -25,12 +26,14 @@ export const searchMovies = createServerFn({ method: 'GET' })
       data: data.query,
       topK: data.limit,
       includeMetadata: true,
+      includeData: true,
     })
 
     return results.map((result) => ({
       id: result.id as string,
       score: result.score,
       metadata: result.metadata as MovieMetadata,
+      overview: (result.data as string) ?? '',
     })) as SearchResult[]
   })
 
