@@ -1,12 +1,8 @@
 import { XIcon, StarIcon, CalendarIcon } from '@phosphor-icons/react'
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogTitle,
-  AlertDialogDescription,
-} from '@/components/ui/alert-dialog'
+import { AlertDialog as AlertDialogPrimitive } from '@base-ui/react/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import type { SearchResult } from '@/lib/search'
 
 interface MovieModalProps {
@@ -22,84 +18,103 @@ export function MovieModal({ movie, open, onOpenChange }: MovieModalProps) {
   const year = metadata.releaseDate?.slice(0, 4) ?? 'N/A'
 
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="max-w-2xl p-0 overflow-hidden">
-        <div className="flex flex-col md:flex-row">
-          {/* Poster */}
-          <div className="w-full md:w-1/3 shrink-0">
-            {metadata.posterUrl ? (
-              <img
-                src={metadata.posterUrl}
-                alt={metadata.title}
-                className="w-full h-48 md:h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-48 md:h-full bg-muted flex items-center justify-center">
-                <span className="text-muted-foreground">No Poster</span>
-              </div>
-            )}
-          </div>
+    <AlertDialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
+      <AlertDialogPrimitive.Portal>
+        {/* Aggressive blur overlay */}
+        <AlertDialogPrimitive.Backdrop
+          className={cn(
+            'data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0',
+            'bg-black/90 backdrop-blur-md fixed inset-0 z-50'
+          )}
+        />
 
-          {/* Content */}
-          <div className="flex-1 p-6 space-y-4">
-            {/* Close Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute top-3 right-3"
-              onClick={() => onOpenChange(false)}
-            >
-              <XIcon size={20} />
-            </Button>
-
-            {/* Title */}
-            <AlertDialogTitle className="text-xl font-bold pr-8">
-              {metadata.title}
-            </AlertDialogTitle>
-
-            {/* Meta info */}
-            <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <CalendarIcon size={14} />
-                {year}
-              </span>
-
-              {metadata.voteAverage && (
-                <span className="flex items-center gap-1">
-                  <StarIcon weight="fill" className="text-yellow-500" size={14} />
-                  {metadata.voteAverage.toFixed(1)}
-                </span>
-              )}
-
-              {metadata.voteCount && (
-                <span className="text-xs">({metadata.voteCount.toLocaleString()} votes)</span>
+        {/* Modal content - no rounded corners, larger */}
+        <AlertDialogPrimitive.Popup
+          className={cn(
+            'data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0',
+            'data-closed:zoom-out-95 data-open:zoom-in-95',
+            'bg-background fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2',
+            'w-[90vw] max-w-3xl max-h-[85vh] overflow-hidden outline-none'
+          )}
+        >
+          <div className="flex flex-col md:flex-row h-full">
+            {/* Poster - larger, square corners */}
+            <div className="w-full md:w-2/5 shrink-0 bg-black">
+              {metadata.posterUrl ? (
+                <img
+                  src={metadata.posterUrl}
+                  alt={metadata.title}
+                  className="w-full h-56 md:h-full object-cover"
+                  style={{ aspectRatio: '2/3' }}
+                />
+              ) : (
+                <div className="w-full h-56 md:h-full bg-muted flex items-center justify-center">
+                  <span className="text-muted-foreground">No Poster</span>
+                </div>
               )}
             </div>
 
-            {/* Genres */}
-            {metadata.genres && metadata.genres.length > 0 && (
-              <div className="flex flex-wrap gap-1.5">
-                {metadata.genres.map((genre) => (
-                  <Badge key={genre} variant="secondary">
-                    {genre}
-                  </Badge>
-                ))}
+            {/* Content */}
+            <div className="flex-1 p-6 space-y-4 overflow-y-auto">
+              {/* Close Button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-3 right-3 text-white/70 hover:text-white hover:bg-white/10"
+                onClick={() => onOpenChange(false)}
+              >
+                <XIcon size={20} />
+              </Button>
+
+              {/* Title */}
+              <AlertDialogPrimitive.Title className="text-xl font-bold pr-8">
+                {metadata.title}
+              </AlertDialogPrimitive.Title>
+
+              {/* Meta info */}
+              <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                <span className="flex items-center gap-1">
+                  <CalendarIcon size={14} />
+                  {year}
+                </span>
+
+                {metadata.voteAverage && (
+                  <span className="flex items-center gap-1">
+                    <StarIcon weight="fill" className="text-yellow-500" size={14} />
+                    {metadata.voteAverage.toFixed(1)}
+                  </span>
+                )}
+
+                {metadata.voteCount && (
+                  <span className="text-xs">({metadata.voteCount.toLocaleString()} votes)</span>
+                )}
               </div>
-            )}
 
-            {/* Overview */}
-            <AlertDialogDescription className="text-sm leading-relaxed max-h-48 overflow-y-auto">
-              {movie.overview || 'No overview available.'}
-            </AlertDialogDescription>
+              {/* Genres */}
+              {metadata.genres && metadata.genres.length > 0 && (
+                <div className="flex flex-wrap gap-1.5">
+                  {metadata.genres.map((genre) => (
+                    <Badge key={genre} variant="secondary">
+                      {genre}
+                    </Badge>
+                  ))}
+                </div>
+              )}
 
-            {metadata.originalLanguage && (
-              <p className="text-xs text-muted-foreground">
-                Original Language: {metadata.originalLanguage.toUpperCase()}
-              </p>
-            )}
+              {/* Overview */}
+              <AlertDialogPrimitive.Description className="text-sm leading-relaxed text-muted-foreground">
+                {movie.overview || 'No overview available.'}
+              </AlertDialogPrimitive.Description>
+
+              {metadata.originalLanguage && (
+                <p className="text-xs text-muted-foreground/70">
+                  Original Language: {metadata.originalLanguage.toUpperCase()}
+                </p>
+              )}
+            </div>
           </div>
-        </div>
-      </AlertDialogContent>
-    </AlertDialog>
+        </AlertDialogPrimitive.Popup>
+      </AlertDialogPrimitive.Portal>
+    </AlertDialogPrimitive.Root>
   )
 }
