@@ -1,6 +1,6 @@
 # Peak Cinema
 
-A semantic movie search engine that lets you find movies by describing the vibe you're looking for. Built with React, TanStack Start, and Upstash Vector for AI-powered semantic search.
+A semantic movie search engine that lets you find movies by describing the vibe you're looking for. Built with React, TanStack Start, and Upstash Vector for semantic search.
 
 ## Features
 
