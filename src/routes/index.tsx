@@ -88,9 +88,9 @@ function App() {
                 exit={{ opacity: 0, y: -10, height: 0, marginBottom: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                vibe search any movie{' '}
-                <span className="text-primary ">
-                  (well... about 10k movies)
+                vibe search any movie
+                <span className="block md:inline italic md:not-italic text-primary text-base md:text-2xl mt-1 md:mt-0">
+                  {' '}(well... about 10k movies)
                 </span>
               </motion.p>
             )}
@@ -120,7 +120,7 @@ function App() {
           transition={{ duration: 0.4, delay: 0.1 }}
         >
           <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-5 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3">
               {/* Show skeleton loaders on first search */}
               {isLoading && results.length === 0
                 ? Array.from({ length: 10 }).map((_, index) => (
