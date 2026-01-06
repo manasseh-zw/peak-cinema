@@ -35,16 +35,15 @@ export function SearchInput({ onSearch, isLoading = false }: SearchInputProps) {
     return () => clearInterval(interval)
   }, [])
 
-  // Debounce the input value
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedValue(value)
-    }, 150)
+    }, 250) 
 
     return () => clearTimeout(timer)
   }, [value])
 
-  // Trigger search when debounced value changes
+
   useEffect(() => {
     onSearch(debouncedValue)
   }, [debouncedValue, onSearch])

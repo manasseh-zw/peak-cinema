@@ -1,62 +1,44 @@
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { AnimatePresence, motion } from 'motion/react'
-import type {SearchResult} from '@/lib/search';
+import type { SearchResult } from '@/lib/search'
 import { SearchInput } from '@/components/search/SearchInput'
 import { MovieModal } from '@/components/movie/MovieModal'
 import { MoviePoster } from '@/components/movie/MoviePoster'
-import {  searchMovies } from '@/lib/search'
+import { searchMovies } from '@/lib/search'
+import { useQuery } from '@tanstack/react-query'
 
 export const Route = createFileRoute('/')({ component: App })
 
 function App() {
-  const [results, setResults] = useState<Array<SearchResult>>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [isFirstSearch, setIsFirstSearch] = useState(true)
-  const [hasSearched, setHasSearched] = useState(false)
+  const [query, setQuery] = useState('')
   const [selectedMovie, setSelectedMovie] = useState<SearchResult | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
 
-  const handleSearch = useCallback(
-    async (query: string) => {
-      if (!query.trim()) {
-        setResults([])
-        setHasSearched(false)
-        setIsFirstSearch(true)
-        return
-      }
+  const {
+    data: results,
+    isPending,
+    isFetching,
+    isError,
+  } = useQuery({
+    queryKey: ['search', query],
+    queryFn: () => searchMovies({ data: { query, limit: 10 } }),
+    enabled: !!query,
+    staleTime: 1000 * 60 * 10,
+    placeholderData: (previousData) => previousData,
+  })
 
-      // Only show loading state on first search (no existing results)
-      const showLoadingState = results.length === 0
-      if (showLoadingState) {
-        setIsLoading(true)
-      }
-      setHasSearched(true)
-      setIsFirstSearch(false)
-
-      try {
-        const data = await searchMovies({ data: { query, limit: 10 } })
-        setResults(data)
-      } catch (error) {
-        console.error('Search error:', error)
-        // Don't clear results on error - keep stale data
-      } finally {
-        setIsLoading(false)
-      }
-    },
-    [results.length],
-  )
+  const hasSearched = !!query
+  const isLoading = isPending && hasSearched
+  const showResults = hasSearched && (!!results || isLoading)
 
   const handleMovieClick = (movie: SearchResult) => {
     setSelectedMovie(movie)
     setModalOpen(true)
   }
 
-  const showResults = hasSearched && (results.length > 0 || isLoading)
-
   return (
     <main className="h-screen overflow-hidden bg-black grain-overlay flex flex-col">
-      {/* Grain filter SVG */}
       <svg className="absolute w-0 h-0">
         <filter id="grain">
           <feTurbulence
@@ -97,16 +79,22 @@ function App() {
           </AnimatePresence>
 
           {/* Search Input */}
-          <SearchInput onSearch={handleSearch} isLoading={isLoading} />
+          <SearchInput onSearch={setQuery} isLoading={isFetching} />
 
           {/* No results - only show when done loading and truly empty */}
           {hasSearched &&
-            !isLoading &&
-            results.length === 0 &&
-            !isFirstSearch && (
+            !isPending &&
+            !isFetching &&
+            results?.length === 0 &&
+            !isError && (
               <p className="text-muted-foreground text-sm">
                 No movies found. Try a different vibe!
               </p>
+            )}
+            {isError && (
+               <p className="text-red-400 text-sm">
+                 Something went wrong. Please try again.
+               </p>
             )}
         </div>
       </motion.section>
@@ -122,7 +110,7 @@ function App() {
           <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3">
               {/* Show skeleton loaders on first search */}
-              {isLoading && results.length === 0
+              {isLoading
                 ? Array.from({ length: 10 }).map((_, index) => (
                     <motion.div
                       key={`skeleton-${index}`}
@@ -132,7 +120,7 @@ function App() {
                       className="aspect-2/3 bg-white/5 animate-pulse"
                     />
                   ))
-                : results.map((movie, index) => (
+                : results?.map((movie, index) => (
                     <motion.div
                       key={movie.id}
                       initial={{ opacity: 0, scale: 0.95 }}
