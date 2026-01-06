@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { MagnifyingGlassIcon, SpinnerGapIcon } from '@phosphor-icons/react'
+import { MagnifyingGlassIcon } from '@phosphor-icons/react'
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from '@/components/ui/input-group'
+import { Spinner } from '@/components/ui/spinner'
 
 const PLACEHOLDER_SUGGESTIONS = [
   'heartwarming family adventure',
@@ -42,7 +43,7 @@ export function SearchInput({ onSearch, isLoading = false }: SearchInputProps) {
 
     return () => clearTimeout(timer)
   }, [value])
-
+ 
 
   useEffect(() => {
     onSearch(debouncedValue)
@@ -77,9 +78,11 @@ export function SearchInput({ onSearch, isLoading = false }: SearchInputProps) {
         )}
       </div>
 
-      <InputGroupAddon align="inline-end" className="pr-2">
+      <InputGroupAddon align="inline-end" className="pr-4">
         {isLoading ? (
-          <SpinnerGapIcon size={24} className="animate-spin text-primary" />
+          <div className="w-10 h-10 flex items-center justify-center">
+            <Spinner size={24} className="text-primary" />
+          </div>
         ) : (
           <div className="w-10 h-10 rounded-full flex items-center justify-center">
             <MagnifyingGlassIcon
