@@ -41,7 +41,18 @@ function App() {
   }
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen bg-black grain-overlay">
+      {/* Grain filter SVG */}
+      <svg className="absolute w-0 h-0">
+        <filter id="grain">
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.6"
+            stitchTiles="stitch"
+          />
+        </filter>
+      </svg>
+
       {/* Hero Section */}
       <section className="pt-20 pb-12 px-4">
         <div className="max-w-4xl mx-auto text-center space-y-6">
