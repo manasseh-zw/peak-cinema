@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'motion/react'
 import { MagnifyingGlassIcon } from '@phosphor-icons/react'
 import {
   InputGroup,
@@ -26,11 +25,16 @@ export function SearchInput({ onSearch, isLoading = false }: SearchInputProps) {
   const [value, setValue] = useState('')
   const [debouncedValue, setDebouncedValue] = useState('')
   const [placeholderIndex, setPlaceholderIndex] = useState(0)
+  const [isPlaceholderVisible, setIsPlaceholderVisible] = useState(true)
 
   // Rotate through placeholder suggestions
   useEffect(() => {
     const interval = setInterval(() => {
-      setPlaceholderIndex((prev) => (prev + 1) % PLACEHOLDER_SUGGESTIONS.length)
+      setIsPlaceholderVisible(false)
+      setTimeout(() => {
+        setPlaceholderIndex((prev) => (prev + 1) % PLACEHOLDER_SUGGESTIONS.length)
+        setIsPlaceholderVisible(true)
+      }, 150)
     }, 3000)
 
     return () => clearInterval(interval)
@@ -62,18 +66,14 @@ export function SearchInput({ onSearch, isLoading = false }: SearchInputProps) {
         {/* Animated placeholder */}
         {!value && (
           <div className="absolute inset-0 flex items-center pl-5 pointer-events-none">
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={placeholderIndex}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 0.5, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-                className="text-muted-foreground "
-              >
-                {PLACEHOLDER_SUGGESTIONS[placeholderIndex]}
-              </motion.span>
-            </AnimatePresence>
+            <span
+              key={placeholderIndex}
+              className={`text-muted-foreground transition-opacity duration-300 ${
+                isPlaceholderVisible ? 'opacity-50 animate-fade-in-up' : 'opacity-0'
+              }`}
+            >
+              {PLACEHOLDER_SUGGESTIONS[placeholderIndex]}
+            </span>
           </div>
         )}
       </div>

@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { motion } from 'motion/react'
 import { StarIcon } from '@phosphor-icons/react'
 import type { SearchResult } from '@/lib/search'
 
@@ -15,12 +14,9 @@ export function MoviePoster({ movie, onClick, className }: MoviePosterProps) {
   const [isLoaded, setIsLoaded] = useState(false)
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      whileHover={{ scale: 1.03, zIndex: 10 }}
+    <div
       onClick={onClick}
-      className={`relative cursor-pointer overflow-hidden group ${className}`}
+      className={`relative cursor-pointer overflow-hidden group transition-transform duration-300 hover:scale-[1.03] hover:z-10 ${className}`}
       style={{ aspectRatio: '2/3' }}
     >
       {/* Loading placeholder - dark with gradient */}
@@ -75,6 +71,6 @@ export function MoviePoster({ movie, onClick, className }: MoviePosterProps) {
         </h3>
         {year && <p className="text-white/70 text-xs mt-1">{year}</p>}
       </div>
-    </motion.div>
+    </div>
   )
 }
